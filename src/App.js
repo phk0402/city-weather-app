@@ -16,7 +16,9 @@ function App() {
   const [weather, setWeather] = useState(null);
   const [city, setCity] = useState("");
   const [loading, setLoading] = useState(false);
-  const cities = ["Rome", "Osaka", "Seoul", "Bangkok", "Paris"];
+  const [errorApi, setErrorApi] = useState("");
+  const cities = ["Rome", "Osaka", "Seoul", "Bangkok", "Sydney", "Vietnam"];
+  const API_KEY = "aad33fc82fae88e9fc46d7a2b0d7179b";
 
   const getCurrentLocation = () => {
     navigator.geolocation.getCurrentPosition((position) => {
@@ -35,21 +37,33 @@ function App() {
   };
 
   const getWeatherByCurrentLocation = async (lat, lon) => {
-    let url = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=aad33fc82fae88e9fc46d7a2b0d7179b&units=metric`;
-    setLoading(true);
-    let response = await fetch(url);
-    let data = await response.json();
-    setWeather(data);
-    setLoading(false);
+    try {
+      let url = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${API_KEY}&units=metric`;
+      setLoading(true);
+      let response = await fetch(url);
+      let data = await response.json();
+
+      setWeather(data);
+      setLoading(false);
+    } catch (error) {
+      setErrorApi(error);
+      setLoading(false);
+    }
   };
 
   const getWeatherByCity = async () => {
-    let url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=aad33fc82fae88e9fc46d7a2b0d7179b&units=metric`;
-    setLoading(true);
-    let response = await fetch(url);
-    let data = await response.json();
-    setWeather(data);
-    setLoading(false);
+    try {
+      let url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${API_KEY}&units=metric`;
+      setLoading(true);
+      let response = await fetch(url);
+      let data = await response.json();
+
+      setWeather(data);
+      setLoading(false);
+    } catch (error) {
+      setErrorApi(error);
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
@@ -63,7 +77,7 @@ function App() {
   return (
     <div className="p__weather">
       <div className="container">
-        <WeatherBox weather={weather} loading={loading} />
+        <WeatherBox weather={weather} loading={loading} errorApi={errorApi} />
         <WeatherButton
           cities={cities}
           handleCityChange={handleCityChange}
